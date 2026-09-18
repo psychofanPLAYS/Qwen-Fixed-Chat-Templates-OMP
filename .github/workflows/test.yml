@@ -15,6 +15,6 @@ jobs:
       - run: python scripts/minify_jinja.py chat_template.jinja chat_template_oneline.txt
       - run: python scripts/test_omp_extensions.py
       - run: python scripts/test_v22.py
-      - run: python scripts/fuzz_template.py --cases 500 --seed 0
+      - run: python scripts/fuzz_template.py --cases 2000 --seed 0
       - run: QWEN_TEMPLATE_FILE=chat_template_oneline.txt python scripts/test_omp_extensions.py
       - run: QWEN_TEMPLATE_FILE=chat_template_oneline.txt python scripts/test_v22.py
