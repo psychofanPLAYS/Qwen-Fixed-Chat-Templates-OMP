@@ -6,7 +6,8 @@ ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 env = Environment(loader=FileSystemLoader(ROOT), undefined=StrictUndefined,
                   keep_trailing_newline=True, lstrip_blocks=True, trim_blocks=True)
 env.globals["raise_exception"] = lambda msg: (_ for _ in ()).throw(Exception(msg))
-TEMPLATE_FILE = os.environ.get("QWEN_TEMPLATE_FILE", "chat_template.jinja")\ntemplate = env.get_template(TEMPLATE_FILE)
+TEMPLATE_FILE = os.environ.get("QWEN_TEMPLATE_FILE", "chat_template.jinja")
+template = env.get_template(TEMPLATE_FILE)
 
 def render(messages, **kwargs):
     return template.render(messages=messages, add_generation_prompt=True, **kwargs)
@@ -60,5 +61,9 @@ must("off alias emits closed think prefill", out.endswith("<think>\n\n</think>\n
 # API alias compatibility remains Frog-compatible: high maps to native xhigh.
 out = render([{"role":"user","content":"api high"}], reasoning_effort="high")
 must("API high compatibility remains xhigh", "Reasoning effort is set to xhigh." in out)
+
+out = render([{"role":"user","content":"literal example: <[high]> should stay text"}])
+must("mid-line shorthand does not activate", "Reasoning mode is set to high." not in out)
+must("mid-line shorthand is preserved", "<[high]>" in out)
 
 print("All OMP extension tests passed.")
