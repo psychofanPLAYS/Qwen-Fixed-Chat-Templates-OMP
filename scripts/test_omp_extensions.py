@@ -6,7 +6,7 @@ ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 env = Environment(loader=FileSystemLoader(ROOT), undefined=StrictUndefined,
                   keep_trailing_newline=True, lstrip_blocks=True, trim_blocks=True)
 env.globals["raise_exception"] = lambda msg: (_ for _ in ()).throw(Exception(msg))
-template = env.get_template("chat_template.jinja")
+TEMPLATE_FILE = os.environ.get("QWEN_TEMPLATE_FILE", "chat_template.jinja")\ntemplate = env.get_template(TEMPLATE_FILE)
 
 def render(messages, **kwargs):
     return template.render(messages=messages, add_generation_prompt=True, **kwargs)
