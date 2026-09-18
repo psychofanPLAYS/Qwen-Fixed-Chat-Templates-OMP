@@ -46,12 +46,21 @@ verification pass
 
 When context pressure rises, OMP maintenance should prune/shake recoverable bulk first. Only then roll to a new notes-backed context window.
 
-## Optional TraceLedger
+## External index: reuse the Codex-Timelines pattern first
 
-Do not duplicate full transcripts. If experiments show a graph/index helps navigation, keep only compact nodes/edges referencing OMP history entry IDs/artifacts.
+The existing Codex-Timelines project already produces:
+- a token-compact LLM-facing Markdown stream;
+- a full forensic Markdown record;
+- machine-readable metadata/catalog data;
+- hierarchy trees and semantic grep anchors.
 
-Suggested files:
-- `.omp-memory/ledger.tsv` — append-only compact nodes/edges.
-- `.omp-memory/current.md` — human/model-readable active view generated from the ledger.
+That is already the kind of cheap, greppable representation we were considering.
 
-This remains optional until notes-backed history retrieval is benchmarked.
+For OMP:
+1. keep the OMP session journal as source of truth;
+2. benchmark native `history://current/full` grep/read first;
+3. if external indexing helps, adapt the Codex-Timelines formatter/schema to consume OMP session events;
+4. keep raw tool payloads in OMP history/artifacts rather than duplicating them;
+5. only add an explicit node/edge ledger if retrieval benchmarks show a real gap.
+
+A future optional derived edge file can still be tiny TSV, but it is not part of r1.
