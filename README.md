@@ -1,46 +1,32 @@
 # Qwen Fixed Chat Templates — OMP hardening
 
-A conservative derivative of Froggeric's **Qwen Fixed Chat Templates v22.5**, focused on Qwen 3.8 as a local coding/dev model behind **Oh My Pi (OMP)**, with llama.cpp and NInfer runtimes.
+> 🚧 **WIP / experimental. Not a stable release yet.**
+>
+> The implementation is being qualified against real **Oh My Pi (OMP) + llama.cpp** agent sessions before it is promoted as ready for normal use.
 
-## Status
+This project hardens Froggeric's **Qwen Fixed Chat Templates v22.5** for Qwen 3.8 used as a local coding/dev model behind **OMP**, with llama.cpp first and NInfer qualification afterward.
 
-Development is PR-first. The current feature work is intentionally small:
+## Current development
 
-- preserve Froggeric v22.5 behavior and tests;
-- add short sticky reasoning controls:
-  - `<[l]>` / `<[low]>` → **LOW** (native Qwen low)
-  - `<[m]>` / `<[med]>` / `<[medium]>` → **MEDIUM** (native Qwen medium)
-  - `<[h]>` / `<[high]>` → **high** (custom iterative reason → act → observe mode)
-  - `<[x]>` / `<[xhigh]>` → **XHIGH** (native Qwen xhigh)
-  - `<[/]>` / `<[off]>` → thinking off compatibility/workflow control;
-- keep Froggeric's original `<|think_*|>` controls intact;
-- keep `preserve_thinking` enabled by default;
-- test true textual last-control-wins for the new shorthand;
-- design OMP context hygiene around Shake + notes-backed context windows rather than stuffing old tool output into the prompt forever.
+Active implementation:
 
-The shorthand is ordinary text, not XML and not a model special token. It is consumed by the template before inference.
+- branch: `feat/omp-reasoning-workflow-r1`
+- PR: [#1 — Harden Froggeric v22.5 for OMP local Qwen workflows](../../pull/1)
+- current gate: [#2 — qualify on current llama.cpp + OMP](../../issues/2)
 
-## Why custom `high` exists
+The feature branch already contains the template, tests, fuzzer, runtime docs, and OMP context-workflow design. CI/Jinja testing is green, but **real-engine runtime qualification is intentionally still open**.
 
-Qwen 3.8's useful native ladder is LOW / MEDIUM / XHIGH. The custom lowercase **high** is not presented as a fourth trained Qwen effort. It is an agent workflow:
+## Planned gates
 
-> think enough to choose the next consequential action; prefer real tool/file/test evidence over prolonged speculation; preserve prior reasoning; reassess after each result; verify before finalizing.
+1. **llama.cpp + OMP runtime qualification** — issue #2
+2. **NInfer 4090 / full-context qualification** — issue #3
+3. **OMP iterative `high` + Shake/notes workflow** — issue #4
+4. **native OMP history vs Codex-Timelines-style derived index** — issue #5
 
-This targets the failure mode where XHIGH produces one enormous uninterrupted reasoning chain before taking useful action.
-
-## Runtime strategy
-
-One Jinja template is the source of truth. llama.cpp and NInfer get separate runtime/profile documentation; we do **not** maintain two hand-edited copies unless an engine proves it requires different Jinja semantics.
-
-See:
-- [Design lock](docs/DESIGN-LOCK.md)
-- [Conversation/report recap](docs/REPORT-2026-09-18.md)
-- [OMP context + memory design](docs/OMP-CONTEXT-MEMORY.md)
-- [llama.cpp profile](docs/RUNTIME-LLAMACPP.md)
-- [NInfer profile](docs/RUNTIME-NINFER.md)
+See [PLAN.md](PLAN.md) for the locked first-release plan and [UPSTREAM.md](UPSTREAM.md) for provenance.
 
 ## Upstream
 
-Derived from Froggeric Qwen Fixed Chat Templates v22.5 (Apache-2.0). Canonical project: https://huggingface.co/froggeric/Qwen-Fixed-Chat-Templates . GitHub mirror used for reproducible source import: https://github.com/rchildre3/Qwen-Fixed-Chat-Templates .
+Derived from Froggeric Qwen Fixed Chat Templates v22.5 under Apache-2.0.
 
-This repository is not represented as an official Froggeric fork because the canonical project is hosted on Hugging Face.
+**Do not treat this repository as production-ready until the runtime gates are closed.**
